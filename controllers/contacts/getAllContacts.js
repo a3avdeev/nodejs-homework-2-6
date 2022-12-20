@@ -1,12 +1,8 @@
-const contacts = require("../../models/contacts");
+const { Contact } = require("../../models/contacts");
 
-const getAllContacts = async (req, res, next) => {
-  try {
-    const result = await contacts.listContacts();
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
+const getAllContacts = async (req, res) => {
+  const result = await Contact.find({}, "-createdAt -updatedAt");
+  res.json(result);
 };
 
 module.exports = getAllContacts;
