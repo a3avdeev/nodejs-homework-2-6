@@ -8,7 +8,7 @@ const signup = async (req, res, next) => {
     const { error } = schemas.registerSchema.validate(req.body);
 
     if (error) {
-      throw HttpError(400, "missing required name field");
+      throw HttpError(400, error.message);
     }
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -21,8 +21,8 @@ const signup = async (req, res, next) => {
     const newUser = await User.create({ ...req.body, password: hashPassword });
 
     res.status(201).json({
-      name: newUser.name,
       email: newUser.email,
+      subscription: newUser.subscription,
     });
   } catch (error) {
     next(error);
