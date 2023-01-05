@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const { User } = require("../../models/user");
 const { HttpError } = require("../../helpers");
 const { schemas } = require("../../models/user");
+const gravatar = require("gravatar");
 
 const signup = async (req, res, next) => {
   try {
@@ -18,11 +19,17 @@ const signup = async (req, res, next) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const avatarURL = gravatar.url(email);
+    const newUser = await User.create({
+      ...req.body,
+      password: hashPassword,
+      avatarURL,
+    });
 
     res.status(201).json({
       email: newUser.email,
       subscription: newUser.subscription,
+      avatar: newUser.avatar,
     });
   } catch (error) {
     next(error);
