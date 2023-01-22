@@ -1,9 +1,16 @@
 const { User } = require("../../models/user");
 const { HttpError, sendEmail } = require("../../helpers");
 const { BASE_URL } = process.env;
+const { schemas } = require("../../models/user");
 
 const resendVerifyEmail = async (req, res, next) => {
   try {
+    const { error } = schemas.emailSchema.validate(req.body);
+
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+      
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
@@ -16,13 +23,13 @@ const resendVerifyEmail = async (req, res, next) => {
     const verifyEmail = {
       to: email,
       subject: "Verify your email",
-      html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click verify email</a>`,
+      html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verificationToken}">Click verify email</a>`,
     };
 
     await sendEmail(verifyEmail);
 
     res.json({
-      message: "Verify email resent",
+      message: "Verification email sent",
     });
   } catch (error) {
     next(error);

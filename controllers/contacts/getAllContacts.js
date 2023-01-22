@@ -7,7 +7,11 @@ const getAllContacts = async (req, res, next) => {
     const skip = (page - 1) * limit;
     const query = { owner };
 
-    // query.favorite = favorite ? favorite : { $in: [true, false] };
+    if (typeof favorite !== "undefined") {
+      query.favorite = favorite;
+    }
+
+    // query.favorite = favorite ? favorite : {$in: [true, false]};
 
     const result = await Contact.find(
       // { owner, favorite: { $eq: favorite } },
@@ -16,7 +20,7 @@ const getAllContacts = async (req, res, next) => {
       {
         skip,
         limit,
-        favorite,
+        // favorite,
       }
     ).populate("owner", "name email");
 
